@@ -1,17 +1,17 @@
 /*
-  --Este Projeto tem por objetivo criar duas threads no FreeRTOS.
+ Curso Online NodeMCU ESP32 FreeRTOS
+ Autor: Fernando Simplicio
+ www.microgenios.com.br
+
+ --Este Projeto tem por objetivo criar duas threads no FreeRTOS.
  --Cada thread é responsável em enviar uma string pela UART do ESP32 de maneira concorrente.
 */
-
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
-#include "HardwareSerial.h"
-
 
 /*
  * Protótipos de Função 
@@ -28,7 +28,9 @@ void vTask2( void *pvParameters );
 portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
 #define CORE_0 0 
 #define CORE_1 1
-//OU tskNO_AFFINITY   <- ver aula em 10:00
+//OU tskNO_AFFINITY 
+
+#define mainDELAY_LOOP_COUNT    ( 0xffffff )
 
 /*
  * Funções
@@ -38,8 +40,7 @@ void prvSetupHardware( void ){
 }
 
 void vPrintString( const char *pcString ){
-
-  taskENTER_CRITICAL( &myMutex ); //ver aula em 08:00 min
+  taskENTER_CRITICAL( &myMutex );
   {
     Serial.println( (char*)pcString );
   }
@@ -62,24 +63,24 @@ void vTask2( void *pvParameters ){
 
   for( ;; ){
     vPrintString( pcTaskName );
-    vTaskDelay( 1000 / portTICK_PERIOD_MS );
+    
+    //você deverá tirar esse for e colocar o vTaskDelay no lugar. 
+    //Esse programa mostra o impacto em deixar a task "travada" no ESP32. Estamos presos nesta task2.
+    for( ul = 0; ul < mainDELAY_LOOP_COUNT; ul++ ){
+
+    }
   }
 }
 
 
 void setup() {
   prvSetupHardware(); 
-  
-  //essa função é exclusiva do ESP, é linguagem nativa da bagaça (é o que muda p primeiro programa _00)
-
-  xTaskCreatePinnedToCore( vTask1, "Task 1", configMINIMAL_STACK_SIZE, NULL, 1, NULL, CORE_0 );   
-  xTaskCreatePinnedToCore( vTask2, "Task 2", configMINIMAL_STACK_SIZE, NULL, 1, NULL, CORE_1 );
+   
+  xTaskCreatePinnedToCore( vTask1, "Task 1", configMINIMAL_STACK_SIZE, NULL, 2, NULL, CORE_0 );   
+  xTaskCreatePinnedToCore( vTask2, "Task 2", configMINIMAL_STACK_SIZE, NULL, 3, NULL, CORE_0 );
 }
 
-
-
-
-void loop() {  
+void loop() {   //TASK loop
   vTaskDelay( 100 / portTICK_PERIOD_MS );
 }
 
