@@ -1,30 +1,24 @@
 /*
- Curso Online NodeMCU ESP32 FreeRTOS
- Autor: Fernando Simplicio
- www.microgenios.com.br
-
  --Este Projeto tem por objetivo criar duas threads no FreeRTOS.
  --Cada thread é responsável em enviar uma string pela UART do ESP32 de maneira concorrente.
 */
 
-#include <stdio.h>
+/*CHAMAR BIBLIOTECAS*/
+#include <stdio.h> 
 #include <string.h>
 #include <stdlib.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-/*
- * Protótipos de Função 
-*/
+/*PROTÓTIPO DE FUNÇÕES */ 
 void prvSetupHardware( void );
 void vPrintString( const char *pcString);
 
 void vTask1( void *pvParameters );
 void vTask2( void *pvParameters );
 
-/*
- * Global
-*/
+// Global
 portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
 
 /*
@@ -62,7 +56,6 @@ void vTask2( void *pvParameters ){
   }
 }
 
-
 void setup() {
   prvSetupHardware(); 
    
@@ -70,10 +63,10 @@ void setup() {
   xTaskCreate( vTask2, "Task 2", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
 }
 
+
 void loop() {   //TASK loop
   vTaskDelay( 100 / portTICK_PERIOD_MS );
 }
-
 
 
 
