@@ -47,7 +47,6 @@ void vPrintString( const char *pcString ){
   taskEXIT_CRITICAL( &myMutex );
   /*liga a chave geral das interrupções*/
 
-
 }
 
 
